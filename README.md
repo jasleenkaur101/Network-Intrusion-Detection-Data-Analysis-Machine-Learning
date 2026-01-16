@@ -1,4 +1,5 @@
-# Network Intrusion Detection – Data Analysis Project
+# Network Intrusion Detection – Data Analysis and Machine Learning 
+Project
 
 ## Project Overview
 This project analyzes network traffic data to identify malicious activity using
