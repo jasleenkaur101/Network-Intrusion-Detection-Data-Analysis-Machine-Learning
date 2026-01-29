@@ -1,0 +1,1196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IDS Project - Executive Summary Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Work+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Work Sans', sans-serif;
+            background: linear-gradient(135deg, #0a1128 0%, #1a1f3a 50%, #2d1b3d 100%);
+            color: #ffffff;
+            padding: 40px 20px;
+            min-height: 100vh;
+        }
+
+        .dashboard-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .header h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7, #ff006e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -1px;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: #a0aec0;
+            font-weight: 300;
+            letter-spacing: 0.5px;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            transition: all 0.3s ease;
+            animation: scaleIn 0.5s ease-out backwards;
+        }
+
+        .metric-card:nth-child(1) { animation-delay: 0.1s; }
+        .metric-card:nth-child(2) { animation-delay: 0.2s; }
+        .metric-card:nth-child(3) { animation-delay: 0.3s; }
+        .metric-card:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes scaleIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .metric-card.critical {
+            border-left: 4px solid #ff006e;
+        }
+
+        .metric-card.warning {
+            border-left: 4px solid #ffa500;
+        }
+
+        .metric-card.info {
+            border-left: 4px solid #00d4ff;
+        }
+
+        .metric-card.success {
+            border-left: 4px solid #00ff88;
+        }
+
+        .metric-label {
+            font-size: 0.85rem;
+            color: #a0aec0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 12px;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1;
+        }
+
+        .metric-value.large {
+            font-size: 3rem;
+        }
+
+        .metric-description {
+            font-size: 0.9rem;
+            color: #cbd5e0;
+            line-height: 1.5;
+        }
+
+        .content-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .content-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 35px;
+            animation: slideUp 0.7s ease-out backwards;
+        }
+
+        .content-card:nth-child(1) { animation-delay: 0.5s; }
+        .content-card:nth-child(2) { animation-delay: 0.6s; }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .content-card h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #00d4ff;
+        }
+
+        .risk-distribution {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .risk-bar {
+            flex: 1;
+            height: 100px;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .risk-bar::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 0;
+            transition: height 1s ease-out 0.8s;
+        }
+
+        .risk-bar.animate::before {
+            height: 100%;
+        }
+
+        .risk-bar.high::before {
+            background: linear-gradient(180deg, rgba(255, 0, 110, 0.3), #ff006e);
+        }
+
+        .risk-bar.low::before {
+            background: linear-gradient(180deg, rgba(0, 212, 255, 0.3), #00d4ff);
+        }
+
+        .risk-bar.medium::before {
+            background: linear-gradient(180deg, rgba(255, 165, 0, 0.3), #ffa500);
+        }
+
+        .risk-bar:hover {
+            transform: translateY(-3px);
+        }
+
+        .risk-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            margin-bottom: 5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .risk-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            position: relative;
+            z-index: 1;
+        }
+
+        .risk-percentage {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .top-services {
+            display: grid;
+            gap: 12px;
+        }
+
+        .service-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid #00d4ff;
+            transition: all 0.3s ease;
+        }
+
+        .service-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .service-name {
+            font-family: 'Space Mono', monospace;
+            font-weight: 600;
+            min-width: 100px;
+        }
+
+        .service-bar-container {
+            flex: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .service-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+            border-radius: 4px;
+            width: 0;
+            transition: width 1s ease-out;
+        }
+
+        .service-bar.animate {
+            width: var(--width);
+        }
+
+        .service-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9rem;
+            min-width: 60px;
+            text-align: right;
+        }
+
+        .insights-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 30px;
+            animation: fadeIn 0.8s ease-out 0.7s backwards;
+        }
+
+        .insights-section h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            margin-bottom: 20px;
+            color: #7b2ff7;
+        }
+
+        .insight-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 18px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .insight-item:hover {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .insight-icon {
+            width: 8px;
+            height: 8px;
+            background: #00ff88;
+            border-radius: 50%;
+            margin-top: 6px;
+            flex-shrink: 0;
+        }
+
+        .insight-text {
+            flex: 1;
+            line-height: 1.6;
+            color: #e2e8f0;
+        }
+
+        .tech-stack {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 30px;
+            animation: fadeIn 0.8s ease-out 0.8s backwards;
+        }
+
+        .tech-stack h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #ff006e;
+        }
+
+        .tech-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .tech-tag {
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .tech-tag:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: #00d4ff;
+            transform: translateY(-2px);
+        }
+
+        .model-metrics-grid {
+            display: grid;
+            gap: 15px;
+        }
+
+        .model-metric {
+            padding: 12px 0;
+        }
+
+        .model-metric-label {
+            font-size: 0.9rem;
+            color: #a0aec0;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .model-metric-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #00ff88;
+        }
+
+        .model-metric-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .model-metric-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00d4ff);
+            border-radius: 4px;
+            width: 0;
+            transition: width 1.2s ease-out 0.5s;
+        }
+
+        .model-metric-fill.animate {
+            width: var(--width);
+        }
+
+        .protocol-breakdown {
+            display: grid;
+            gap: 20px;
+        }
+
+        .protocol-item {
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 8px;
+            border-left: 3px solid #7b2ff7;
+        }
+
+        .protocol-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .protocol-name {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        .protocol-total {
+            font-size: 0.85rem;
+            color: #a0aec0;
+        }
+
+        .protocol-bars {
+            display: flex;
+            gap: 5px;
+            height: 40px;
+        }
+
+        .protocol-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 0;
+            opacity: 0;
+        }
+
+        .protocol-bar.animate {
+            width: var(--width);
+            opacity: 1;
+        }
+
+        .protocol-bar.attack {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.8), rgba(255, 0, 110, 0.5));
+            transition: width 1s ease-out 0.8s, opacity 1s ease-out 0.8s;
+        }
+
+        .protocol-bar.normal {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.8), rgba(0, 212, 255, 0.5));
+            transition: width 1s ease-out 1s, opacity 1s ease-out 1s;
+        }
+
+        .protocol-bar:hover {
+            transform: scaleY(1.1);
+            filter: brightness(1.2);
+        }
+
+        .protocol-bar span {
+            white-space: nowrap;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+        }
+
+        .confusion-matrix-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 35px;
+            margin-bottom: 40px;
+            animation: fadeIn 0.8s ease-out 0.9s backwards;
+        }
+
+        .confusion-matrix-section h3 {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            color: #ff006e;
+        }
+
+        .confusion-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
+
+        .confusion-matrix {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .matrix-title {
+            text-align: center;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #00d4ff;
+            margin-bottom: 20px;
+        }
+
+        .matrix-container {
+            position: relative;
+        }
+
+        .matrix-labels {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .label-predicted {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.85rem;
+            color: #a0aec0;
+            font-weight: 600;
+        }
+
+        .label-actual {
+            position: absolute;
+            left: -80px;
+            top: 50%;
+            transform: translateY(-50%) rotate(-90deg);
+            font-size: 0.85rem;
+            color: #a0aec0;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 80px 1fr 1fr;
+            gap: 8px;
+        }
+
+        .matrix-header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #cbd5e0;
+            padding: 8px;
+        }
+
+        .matrix-cell {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .matrix-cell::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .matrix-cell.tp::before {
+            background: linear-gradient(135deg, rgba(0, 255, 136, 0.2), rgba(0, 255, 136, 0.05));
+        }
+
+        .matrix-cell.tn::before {
+            background: linear-gradient(135deg, rgba(0, 212, 255, 0.2), rgba(0, 212, 255, 0.05));
+        }
+
+        .matrix-cell.fp::before {
+            background: linear-gradient(135deg, rgba(255, 165, 0, 0.2), rgba(255, 165, 0, 0.05));
+        }
+
+        .matrix-cell.fn::before {
+            background: linear-gradient(135deg, rgba(255, 0, 110, 0.2), rgba(255, 0, 110, 0.05));
+        }
+
+        .matrix-cell:hover {
+            transform: scale(1.05);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .matrix-cell:hover::before {
+            opacity: 1;
+        }
+
+        .matrix-cell.tp {
+            border-color: rgba(0, 255, 136, 0.3);
+        }
+
+        .matrix-cell.tn {
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .matrix-cell.fp {
+            border-color: rgba(255, 165, 0, 0.3);
+        }
+
+        .matrix-cell.fn {
+            border-color: rgba(255, 0, 110, 0.3);
+        }
+
+        .cell-label {
+            font-size: 0.75rem;
+            color: #a0aec0;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cell-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 4px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .matrix-cell.tp .cell-value {
+            color: #00ff88;
+        }
+
+        .matrix-cell.tn .cell-value {
+            color: #00d4ff;
+        }
+
+        .matrix-cell.fp .cell-value {
+            color: #ffa500;
+        }
+
+        .matrix-cell.fn .cell-value {
+            color: #ff006e;
+        }
+
+        .cell-percentage {
+            font-size: 0.85rem;
+            opacity: 0.8;
+            position: relative;
+            z-index: 1;
+        }
+
+        .classification-stats {
+            display: grid;
+            gap: 15px;
+        }
+
+        .stat-card {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            padding: 18px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateX(5px);
+        }
+
+        .stat-card.positive {
+            border-color: #00ff88;
+        }
+
+        .stat-card.negative {
+            border-color: #ffa500;
+        }
+
+        .stat-card.warning {
+            border-color: #ff006e;
+        }
+
+        .stat-icon {
+            font-size: 2rem;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            flex-shrink: 0;
+        }
+
+        .stat-content {
+            flex: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: #a0aec0;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+        }
+
+        .stat-card.positive .stat-value {
+            color: #00ff88;
+        }
+
+        .stat-card.negative .stat-value {
+            color: #ffa500;
+        }
+
+        .stat-card.warning .stat-value {
+            color: #ff006e;
+        }
+
+        .stat-desc {
+            font-size: 0.8rem;
+            color: #cbd5e0;
+            opacity: 0.8;
+        }
+
+        .interpretation {
+            padding: 18px;
+            background: rgba(123, 47, 247, 0.1);
+            border: 1px solid rgba(123, 47, 247, 0.3);
+            border-radius: 10px;
+            line-height: 1.6;
+            color: #e2e8f0;
+            font-size: 0.9rem;
+        }
+
+        .interpretation strong {
+            color: #7b2ff7;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            padding: 20px;
+            color: #a0aec0;
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 1024px) {
+            .content-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .confusion-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .metric-value {
+                font-size: 2rem;
+            }
+
+            .risk-distribution {
+                flex-direction: column;
+            }
+
+            .risk-bar {
+                height: 60px;
+            }
+
+            .matrix-grid {
+                grid-template-columns: 60px 1fr 1fr;
+                font-size: 0.8rem;
+            }
+
+            .matrix-cell {
+                padding: 12px;
+            }
+
+            .cell-value {
+                font-size: 1.2rem;
+            }
+
+            .label-actual {
+                left: -60px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <div class="header">
+            <h1>Network Intrusion Detection System</h1>
+            <p class="subtitle">Machine Learning-Based Threat Detection & Analytics Dashboard</p>
+        </div>
+
+        <div class="metrics-grid">
+            <div class="metric-card info">
+                <div class="metric-label">Total Network Events</div>
+                <div class="metric-value large">22,544</div>
+                <div class="metric-description">Complete dataset analyzed</div>
+            </div>
+
+            <div class="metric-card critical">
+                <div class="metric-label">Detected Attacks</div>
+                <div class="metric-value">8,727</div>
+                <div class="metric-description">38.7% classified as threats</div>
+            </div>
+
+            <div class="metric-card success">
+                <div class="metric-label">Normal Traffic</div>
+                <div class="metric-value">13,817</div>
+                <div class="metric-description">61.3% legitimate connections</div>
+            </div>
+
+            <div class="metric-card warning">
+                <div class="metric-label">Avg Risk Score</div>
+                <div class="metric-value">0.60</div>
+                <div class="metric-description">Attack probability index</div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>Machine Learning Model Performance</h3>
+                <div class="model-metrics-grid">
+                    <div class="model-metric">
+                        <div class="model-metric-label">Accuracy</div>
+                        <div class="model-metric-value">75.4%</div>
+                        <div class="model-metric-bar">
+                            <div class="model-metric-fill" style="--width: 75.4%;"></div>
+                        </div>
+                    </div>
+                    <div class="model-metric">
+                        <div class="model-metric-label">Precision</div>
+                        <div class="model-metric-value">91.8%</div>
+                        <div class="model-metric-bar">
+                            <div class="model-metric-fill" style="--width: 91.8%;"></div>
+                        </div>
+                    </div>
+                    <div class="model-metric">
+                        <div class="model-metric-label">Recall</div>
+                        <div class="model-metric-value">62.4%</div>
+                        <div class="model-metric-bar">
+                            <div class="model-metric-fill" style="--width: 62.4%;"></div>
+                        </div>
+                    </div>
+                    <div class="model-metric">
+                        <div class="model-metric-label">F1 Score</div>
+                        <div class="model-metric-value">74.3%</div>
+                        <div class="model-metric-bar">
+                            <div class="model-metric-fill" style="--width: 74.3%;"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="metric-description" style="margin-top: 20px;">
+                    <strong>Model:</strong> Logistic Regression | <strong>Training Time:</strong> 4.69s<br>
+                    High precision (91.8%) minimizes false positives, ensuring reliable threat detection.
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h3>Risk Level Distribution</h3>
+                <div class="risk-distribution">
+                    <div class="risk-bar high">
+                        <div class="risk-label">High Risk</div>
+                        <div class="risk-value">13.5K</div>
+                        <div class="risk-percentage">59.76%</div>
+                    </div>
+                    <div class="risk-bar low">
+                        <div class="risk-label">Low Risk</div>
+                        <div class="risk-value">8.6K</div>
+                        <div class="risk-percentage">38.13%</div>
+                    </div>
+                    <div class="risk-bar medium">
+                        <div class="risk-label">Medium</div>
+                        <div class="risk-value">0.5K</div>
+                        <div class="risk-percentage">2.14%</div>
+                    </div>
+                </div>
+                <div class="metric-description" style="margin-top: 15px;">
+                    High-risk traffic represents critical monitoring priority with ~60% of all connections flagged for potential threats.
+                </div>
+            </div>
+        </div>
+
+        <div class="content-grid">
+            <div class="content-card">
+                <h3>Top Attack Services</h3>
+                <div class="top-services">
+                    <div class="service-item">
+                        <div class="service-name">http</div>
+                        <div class="service-bar-container">
+                            <div class="service-bar" style="--width: 100%;"></div>
+                        </div>
+                        <div class="service-value">7,853</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">telnet</div>
+                        <div class="service-bar-container">
+                            <div class="service-bar" style="--width: 21%;"></div>
+                        </div>
+                        <div class="service-value">1,626</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">private</div>
+                        <div class="service-bar-container">
+                            <div class="service-bar" style="--width: 18%;"></div>
+                        </div>
+                        <div class="service-value">1,400</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">smtp</div>
+                        <div class="service-bar-container">
+                            <div class="service-bar" style="--width: 12%;"></div>
+                        </div>
+                        <div class="service-value">934</div>
+                    </div>
+                    <div class="service-item">
+                        <div class="service-name">ftp_data</div>
+                        <div class="service-bar-container">
+                            <div class="service-bar" style="--width: 11%;"></div>
+                        </div>
+                        <div class="service-value">851</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="content-card">
+                <h3>Protocol Distribution</h3>
+                <div class="protocol-breakdown">
+                    <div class="protocol-item">
+                        <div class="protocol-header">
+                            <span class="protocol-name">TCP</span>
+                            <span class="protocol-total">18,880 events</span>
+                        </div>
+                        <div class="protocol-bars">
+                            <div class="protocol-bar attack" style="--width: 62.3%;" title="High Risk: 11,755">
+                                <span>11.8K High Risk</span>
+                            </div>
+                            <div class="protocol-bar normal" style="--width: 35.7%;" title="Low Risk: 6,733">
+                                <span>6.7K Low Risk</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="protocol-item">
+                        <div class="protocol-header">
+                            <span class="protocol-name">UDP</span>
+                            <span class="protocol-total">2,621 events</span>
+                        </div>
+                        <div class="protocol-bars">
+                            <div class="protocol-bar attack" style="--width: 64.2%;" title="High Risk: 1,684">
+                                <span>1.7K High Risk</span>
+                            </div>
+                            <div class="protocol-bar normal" style="--width: 33.5%;" title="Low Risk: 879">
+                                <span>0.9K Low Risk</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="protocol-item">
+                        <div class="protocol-header">
+                            <span class="protocol-name">ICMP</span>
+                            <span class="protocol-total">1,043 events</span>
+                        </div>
+                        <div class="protocol-bars">
+                            <div class="protocol-bar attack" style="--width: 3.2%;" title="High Risk: 33">
+                                <span>33 High Risk</span>
+                            </div>
+                            <div class="protocol-bar normal" style="--width: 93.8%;" title="Low Risk: 978">
+                                <span>978 Low Risk</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="confusion-matrix-section">
+            <h3>Model Classification Analysis</h3>
+            <div class="confusion-grid">
+                <div class="confusion-matrix">
+                    <div class="matrix-title">Confusion Matrix</div>
+                    <div class="matrix-container">
+                        <div class="matrix-labels">
+                            <div class="label-predicted">Predicted Label</div>
+                            <div class="label-actual">Actual Label</div>
+                        </div>
+                        <div class="matrix-grid">
+                            <div class="matrix-header"></div>
+                            <div class="matrix-header">Attack</div>
+                            <div class="matrix-header">Normal</div>
+                            
+                            <div class="matrix-header">Attack</div>
+                            <div class="matrix-cell tp" data-value="8008">
+                                <div class="cell-label">True Positive</div>
+                                <div class="cell-value">8,008</div>
+                                <div class="cell-percentage">62.4%</div>
+                            </div>
+                            <div class="matrix-cell fn" data-value="4825">
+                                <div class="cell-label">False Negative</div>
+                                <div class="cell-value">4,825</div>
+                                <div class="cell-percentage">37.6%</div>
+                            </div>
+                            
+                            <div class="matrix-header">Normal</div>
+                            <div class="matrix-cell fp" data-value="719">
+                                <div class="cell-label">False Positive</div>
+                                <div class="cell-value">719</div>
+                                <div class="cell-percentage">7.4%</div>
+                            </div>
+                            <div class="matrix-cell tn" data-value="8992">
+                                <div class="cell-label">True Negative</div>
+                                <div class="cell-value">8,992</div>
+                                <div class="cell-percentage">92.6%</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="classification-stats">
+                    <div class="stat-card positive">
+                        <div class="stat-icon">✓</div>
+                        <div class="stat-content">
+                            <div class="stat-label">Specificity</div>
+                            <div class="stat-value">92.6%</div>
+                            <div class="stat-desc">True Negative Rate</div>
+                        </div>
+                    </div>
+                    <div class="stat-card negative">
+                        <div class="stat-icon">✗</div>
+                        <div class="stat-content">
+                            <div class="stat-label">False Positive Rate</div>
+                            <div class="stat-value">7.4%</div>
+                            <div class="stat-desc">Low false alarm rate</div>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">⚠</div>
+                        <div class="stat-content">
+                            <div class="stat-label">False Negative Rate</div>
+                            <div class="stat-value">37.6%</div>
+                            <div class="stat-desc">Missed attacks</div>
+                        </div>
+                    </div>
+                    <div class="interpretation">
+                        <strong>Interpretation:</strong> The model excels at identifying normal traffic (92.6% specificity) with minimal false alarms (7.4%). The 37.6% false negative rate suggests opportunity for improvement in detecting all attack types, potentially through ensemble methods or feature engineering.
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="insights-section">
+            <h3>Key Findings & Insights</h3>
+            <div class="insight-item">
+                <div class="insight-icon"></div>
+                <div class="insight-text">
+                    <strong>High Attack Volume:</strong> 39% of network traffic classified as potential attacks (8,727 out of 22,544 events), indicating significant threat exposure across the monitored network infrastructure.
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon"></div>
+                <div class="insight-text">
+                    <strong>Model Performance:</strong> Logistic Regression model achieved 75.4% accuracy with exceptional 91.8% precision, minimizing false positives. Training completed in just 4.69 seconds, demonstrating efficiency for real-time deployment.
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon"></div>
+                <div class="insight-text">
+                    <strong>TCP Dominance:</strong> TCP protocol accounts for the majority of intrusion attempts (11,755 high-risk events out of 18,880 total TCP traffic), highlighting the need for enhanced TCP traffic monitoring and filtering.
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon"></div>
+                <div class="insight-text">
+                    <strong>Service-Level Targeting:</strong> HTTP service alone accounts for 7,853 attack attempts, followed by telnet (1,626) and private services (1,400), suggesting targeted exploitation of web and remote access protocols.
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon"></div>
+                <div class="insight-text">
+                    <strong>Critical Risk Priority:</strong> 59.76% of traffic (13,472 events) flagged as high-risk requires immediate attention. The model's high precision ensures that security teams can trust alerts and prioritize responses effectively.
+                </div>
+            </div>
+            <div class="insight-item">
+                <div class="insight-icon"></div>
+                <div class="insight-text">
+                    <strong>Protocol Security Profile:</strong> While TCP and UDP show high attack rates (62-64% of their traffic), ICMP remains predominantly safe (93.8% normal), indicating attackers primarily target connection-oriented protocols.
+                </div>
+            </div>
+        </div>
+
+        <div class="tech-stack">
+            <h3>Technology Stack</h3>
+            <div class="tech-tags">
+                <div class="tech-tag">Python</div>
+                <div class="tech-tag">Pandas</div>
+                <div class="tech-tag">NumPy</div>
+                <div class="tech-tag">Scikit-Learn</div>
+                <div class="tech-tag">Machine Learning</div>
+                <div class="tech-tag">Random Forest</div>
+                <div class="tech-tag">Decision Trees</div>
+                <div class="tech-tag">SVM</div>
+                <div class="tech-tag">Naive Bayes</div>
+                <div class="tech-tag">Logistic Regression</div>
+                <div class="tech-tag">Power BI</div>
+                <div class="tech-tag">Data Visualization</div>
+                <div class="tech-tag">Network Security Analytics</div>
+                <div class="tech-tag">KDD Dataset</div>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Intrusion Detection System (IDS) – Cyber/Data Analytics & Machine Learning Project</p>
+            <p style="margin-top: 5px; font-size: 0.85rem;">University of Wollongong in Dubai | Sep 2025 - Oct 2025</p>
+        </div>
+    </div>
+
+    <script>
+        // Animate elements on load
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.querySelectorAll('.risk-bar').forEach(bar => {
+                    bar.classList.add('animate');
+                });
+
+                document.querySelectorAll('.service-bar').forEach(bar => {
+                    bar.classList.add('animate');
+                });
+
+                document.querySelectorAll('.model-metric-fill').forEach(bar => {
+                    bar.classList.add('animate');
+                });
+
+                document.querySelectorAll('.protocol-bar').forEach(bar => {
+                    bar.classList.add('animate');
+                });
+            }, 100);
+        });
+    </script>
+</body>
+</html>
