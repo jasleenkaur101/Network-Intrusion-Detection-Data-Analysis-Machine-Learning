@@ -1,5 +1,5 @@
 # Network Intrusion Detection System (IDS)
-## Data Analytics & Machine Learning Project
+## Cyber Data Analytics & Machine Learning Project
 
 ## Project Overview
 This project implements a data-driven Intrusion Detection System (IDS) that analyzes network traffic and classifies connections as normal or malicious. Using the KDD Cup 99 dataset, the project combines data analytics, feature engineering, machine learning, and visualization to demonstrate how data can be used to detect cybersecurity threats and support decision-making.
@@ -93,14 +93,7 @@ Note: Data preprocessing and feature engineering were performed in Python prior 
 - Highlights practical application of machine learning evaluation in cybersecurity  
 - Shows ability to communicate analytical insights through dashboards  
 - Reflects real-world data workflows and tool limitations  
-
----
-
-## Future Improvements
-- Time-based traffic analysis  
-- Comparison with Tableau dashboards  
-- Deployment of model predictions via API  
-- Exploration of advanced ensemble or deep learning models  
+ 
 
 ---
 
